@@ -6,18 +6,15 @@ class CoinModel extends Coin {
     required super.name,
     required super.price,
     required super.symbol,
-    required super.iconAddress,
-    required super.isFavorite,
   });
 
-  factory CoinModel.fromJson(Map<String, dynamic> json) {
+
+  factory CoinModel.fromMap(String key, Map<String, dynamic> data, int idx) {
     return CoinModel(
-      id: json['id'],
-      name: json['name'],
-      price: json['price'],
-      symbol: json['symbol'],
-      iconAddress: json['icon_address'],
-      isFavorite: json['is_favorite'],
+      id:     idx,
+      name:   data['description'] as String,
+      symbol: key,
+      price:  data['rate_float'] as num,
     );
   }
 }

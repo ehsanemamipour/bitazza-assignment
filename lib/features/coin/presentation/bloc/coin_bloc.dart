@@ -1,77 +1,47 @@
+import 'dart:async';
+import 'package:bloc/bloc.dart';
 import 'package:bitazza_assignment/core/utils/usecase_utils.dart';
-import 'package:bitazza_assignment/features/coin/domain/usecases/add_coin_to_favorite.dart';
-import 'package:bitazza_assignment/features/coin/domain/usecases/delete_coin_from_favorite.dart';
+import 'package:bitazza_assignment/features/coin/domain/entities/coin.dart';
 import 'package:bitazza_assignment/features/coin/domain/usecases/fetch_coin_list.dart';
-import 'package:bitazza_assignment/features/coin/presentation/bloc/coin_event.dart';
-import 'package:bitazza_assignment/features/coin/presentation/bloc/coin_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bitazza_assignment/core/errors/errors.dart';
+import 'package:equatable/equatable.dart';
+
+part 'coin_event.dart';
+part 'coin_state.dart';
 
 class CoinBloc extends Bloc<CoinEvent, CoinState> {
-  CoinBloc({
-    required this.fetchCoinList,
-    required this.addCoinToFavorite,
-    required this.deleteCoinFromFavorite,
-  }) : super(CoinInitial()) {
-    on<CoinEvent>((event, emit) async {
-      if (event is GetCoinListEvent) {
-        await _onGetCoinListEvent(event, emit);
-      } else if (event is AddFavoriteEvent) {
-        await _onAddFavoriteEvent(event, emit);
-      } else if (event is DeleteFavoriteEvent) {
-        await _onDeleteFavoriteEvent(event, emit);
-      }
-    });
-  }
-  final AddCoinToFavorite addCoinToFavorite;
-  final DeleteCoinFromFavorite deleteCoinFromFavorite;
   final FetchCoinList fetchCoinList;
+  Timer? _timer;
 
-  Future<void> _onAddFavoriteEvent(AddFavoriteEvent event, Emitter<CoinState> emit) async {
-    final result = await addCoinToFavorite(AddCoinToFavoriteParams(id: event.coinId));
+  CoinBloc({required this.fetchCoinList}) : super(CoinInitial()) {
+    on<LoadCoinsEvent>(_onLoadCoins);
+    on<StartAutoRefreshEvent>(_onStartAutoRefresh);
 
-    result.fold((error) => emit(CoinError(message: error.message)), (success) {
-      if (state is CoinLoaded) {
-        final currentState = state as CoinLoaded;
-        final updatedCoins =
-            currentState.coins.map((coin) {
-              if (coin.id == event.coinId) {
-                return coin.copyWith(isFavorite: true);
-              }
-              return coin;
-            }).toList();
-
-        emit(CoinLoaded(coins: updatedCoins));
-      }
-
-      emit(CoinFavoriteSuccess(id: event.coinId));
-    });
+    add(LoadCoinsEvent());
+    add(StartAutoRefreshEvent());
   }
 
-  Future<void> _onDeleteFavoriteEvent(DeleteFavoriteEvent event, Emitter<CoinState> emit) async {
-    final result = await deleteCoinFromFavorite(DeleteCoinFromFavoriteParams(id: event.coinId));
-
-    result.fold((error) => emit(CoinError(message: error.message)), (success) {
-      if (state is CoinLoaded) {
-        final currentState = state as CoinLoaded;
-        final updatedCoins =
-            currentState.coins.map((coin) {
-              if (coin.id == event.coinId) {
-                return coin.copyWith(isFavorite: false);
-              }
-              return coin;
-            }).toList();
-
-        emit(CoinLoaded(coins: updatedCoins));
-      }
-
-      emit(CoinFavoriteSuccess(id: event.coinId));
-    });
-  }
-
-  Future<void> _onGetCoinListEvent(GetCoinListEvent event, Emitter<CoinState> emit) async {
+  Future<void> _onLoadCoins(
+      LoadCoinsEvent event, Emitter<CoinState> emit) async {
     emit(CoinLoading());
-    final result = await fetchCoinList(NoParams());
+    final res = await fetchCoinList(NoParams());
+    res.fold(
+      (f) => emit(CoinError(f.message)),
+      (coins) => emit(CoinLoaded(coins)),
+    );
+  }
 
-    emit(result.fold((error) => CoinError(message: error.message), (coins) => CoinLoaded(coins: coins)));
+  Future<void> _onStartAutoRefresh(
+      StartAutoRefreshEvent event, Emitter<CoinState> emit) async {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
+      add(LoadCoinsEvent());
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
   }
 }

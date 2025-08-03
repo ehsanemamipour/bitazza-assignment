@@ -1,66 +1,34 @@
+import 'dart:convert';
 import 'package:bitazza_assignment/core/consts/consts.dart';
 import 'package:bitazza_assignment/core/errors/exceptions.dart';
 import 'package:bitazza_assignment/core/services/http_service.dart';
 import 'package:bitazza_assignment/features/coin/data/models/coin_model.dart';
-import 'package:bitazza_assignment/features/coin/data/models/favorite_coin_model.dart';
 
 abstract class CoinRemoteDataSource {
   Future<List<CoinModel>> getCoinList();
-  Future<List<FavoriteCoinModel>> getFavoriteCoinList();
-  Future<void> addCoinToFavorite(int id);
-  Future<void> deleteCoinFromFavorite(int id);
 }
 
-class CoinRemoteDataSourceImpl extends CoinRemoteDataSource {
-  CoinRemoteDataSourceImpl({required this.httpService});
+class CoinRemoteDataSourceImpl implements CoinRemoteDataSource {
   final HTTPService httpService;
+  CoinRemoteDataSourceImpl({required this.httpService});
 
   @override
   Future<List<CoinModel>> getCoinList() async {
     try {
-      final result = await httpService.getData(ServerPaths.coinList);
-      List<dynamic> data = result.data;
-      var coins =
-          data.map((coin) {
-            return CoinModel.fromJson(coin);
-          }).toList();
-
-      return coins;
+      final response = await httpService.getData(BASE_URL + CURRENT_PRICE);
+      print(response.body);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> json = jsonDecode(response.data);
+        final bpi = json['bpi'] as Map<String, dynamic>;
+        print('bpi: $bpi');
+        var idx = 0;
+        return bpi.entries.map((e) => CoinModel.fromMap(e.key, e.value, idx++)).toList();
+      } else {
+        throw ServerException(message: 'Failed to fetch BTC prices');
+      }
     } catch (e) {
-      throw ServerException(message: e.toString());
-    }
-  }
-
-  @override
-  Future<List<FavoriteCoinModel>> getFavoriteCoinList() async {
-    try {
-      final result = await httpService.getData(ServerPaths.favoriteCoin);
-      List<dynamic> data = result.data;
-      var coins =
-          data.map((coin) {
-            return FavoriteCoinModel.fromJson(coin);
-          }).toList();
-      return coins;
-    } catch (e) {
-      throw ServerException(message: e.toString());
-    }
-  }
-
-  @override
-  Future<void> addCoinToFavorite(int id) async {
-    try {
-      await httpService.postData(ServerPaths.favoriteCoin, data: {'cryptocurrency_id': id});
-    } catch (e) {
-      throw ServerException(message: e.toString());
-    }
-  }
-
-  @override
-  Future<void> deleteCoinFromFavorite(int id) async {
-    try {
-      await httpService.deleteData('${ServerPaths.favoriteCoin}/$id');
-    } catch (e) {
-      throw ServerException(message: e.toString());
+      print('asdasdasdasdasd');
+      throw ServerException(message: 'Failed to fetch BTC prices');
     }
   }
 }

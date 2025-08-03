@@ -1,34 +1,24 @@
-import 'package:bitazza_assignment/features/coin/domain/entities/coin.dart';
-import 'package:equatable/equatable.dart';
+part of 'coin_bloc.dart';
 
 abstract class CoinState extends Equatable {
   const CoinState();
-
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class CoinInitial extends CoinState {}
-
-class CoinLoaded extends CoinState {
-  const CoinLoaded({required this.coins});
-  final List<Coin> coins;
-  @override
-  List<Object> get props => [coins];
-}
-
 class CoinLoading extends CoinState {}
 
-class CoinFavoriteSuccess extends CoinState {
-  const CoinFavoriteSuccess({required this.id});
-  final int id;
+class CoinLoaded extends CoinState {
+  final List<Coin> coins;
+  const CoinLoaded(this.coins);
   @override
-  List<Object> get props => [id];
+  List<Object?> get props => [coins];
 }
 
 class CoinError extends CoinState {
-  const CoinError({required this.message});
   final String message;
+  const CoinError(this.message);
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }

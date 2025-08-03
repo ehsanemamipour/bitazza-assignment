@@ -10,7 +10,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider<CoinBloc>(create: (_) => sl.serviceLocator<CoinBloc>()),
+        BlocProvider<CoinBloc>(create: (_) => sl.serviceLocator<CoinBloc>()..add(LoadCoinsEvent())),
       ],
       child: MaterialApp.router(routerConfig: AppRouter.getRouter()),
     ),

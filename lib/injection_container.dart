@@ -3,8 +3,6 @@ import 'package:bitazza_assignment/core/utils/network_utils.dart';
 import 'package:bitazza_assignment/features/coin/data/datasource/coin_remote_datasource.dart';
 import 'package:bitazza_assignment/features/coin/data/repositories/coin_repository_impl.dart';
 import 'package:bitazza_assignment/features/coin/domain/repositories/coin_repository.dart';
-import 'package:bitazza_assignment/features/coin/domain/usecases/add_coin_to_favorite.dart';
-import 'package:bitazza_assignment/features/coin/domain/usecases/delete_coin_from_favorite.dart';
 import 'package:bitazza_assignment/features/coin/domain/usecases/fetch_coin_list.dart';
 import 'package:bitazza_assignment/features/coin/presentation/bloc/coin_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -26,13 +24,9 @@ void _injectCoin() {
   serviceLocator.registerFactory(
     () => CoinBloc(
       fetchCoinList: serviceLocator(),
-      addCoinToFavorite: serviceLocator(),
-      deleteCoinFromFavorite: serviceLocator(),
     ),
   );
   //usecase
-  serviceLocator.registerLazySingleton(() => AddCoinToFavorite(repository: serviceLocator()));
-  serviceLocator.registerLazySingleton(() => DeleteCoinFromFavorite(repository: serviceLocator()));
   serviceLocator.registerLazySingleton(() => FetchCoinList(repository: serviceLocator()));
 
   //repositories
