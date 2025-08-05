@@ -1,2 +1,2 @@
-const String BASE_URL       = 'https://api.coindesk.com/v1/bpi';
-const String CURRENT_PRICE  = '/currentprice.json';
+const String baseUrl       = 'https://api.coindesk.com/v1/bpi';
+const String currentPrice  = '/currentprice.json';

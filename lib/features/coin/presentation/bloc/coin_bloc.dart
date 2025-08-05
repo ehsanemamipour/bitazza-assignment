@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:bitazza_assignment/core/utils/usecase_utils.dart';
 import 'package:bitazza_assignment/features/coin/domain/entities/coin.dart';
 import 'package:bitazza_assignment/features/coin/domain/usecases/fetch_coin_list.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'coin_event.dart';
 part 'coin_state.dart';

@@ -17,16 +17,6 @@ class _CoinPageState extends State<CoinPage> {
   DateTime _lastUpdate = DateTime.now().toUtc();
 
   @override
-  void initState() {
-    super.initState();
-    // context.read<CoinBloc>().stream.listen((state) {
-    //   if (state is CoinLoaded) {
-    //     _lastUpdate = DateTime.now().toUtc();
-    //   }
-    // });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final df = DateFormat('MMM d, yyyy HH:mm:ss');
     return Scaffold(
