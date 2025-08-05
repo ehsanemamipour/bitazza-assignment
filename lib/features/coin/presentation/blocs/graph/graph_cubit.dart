@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:bitazza_assignment/data/services/bitcoin_service.dart';
+import 'package:bitazza_assignment/core/data/services/bitcoin_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:bitazza_assignment/injection_container.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

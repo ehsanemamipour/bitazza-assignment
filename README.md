@@ -1,17 +1,35 @@
-# bitazza_assignment
+Bitazza Challenge
+========
 
-A new Flutter project.
+Bitazza assignment is a challenge to demonstrate skills in Flutter
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+Features
+--------
 
-A few resources to get you started if this is your first Flutter project:
+- Clean architecture
+- Bloc state management and Cubit
+- Get-it service locator
+- Used two ways for implementing state managment to show skills in both:
+    first in "coin" with event,state and bloc file
+    second in "convert" and "graph" with cubit and state
+- Used mock data because api didn't work
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Configuration
+------------
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# bitazza-assignment
+To run this application, you’ll need to have Dart and Flutter installed on your computer. After this run these commands:
+
+    flutter pub get
+
+if anything goes wrong please run:
+
+    flutter clean
+    flutter pub get
+
+
+Support
+-------
+
+If you are having issues, please let me know.
+I have a mailing address located at: ehsan.emami.p@gmail.com

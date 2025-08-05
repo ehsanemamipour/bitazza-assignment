@@ -1,4 +1,4 @@
-import 'package:bitazza_assignment/data/services/bitcoin_service.dart';
+import 'package:bitazza_assignment/core/data/services/bitcoin_service.dart';
 import '../models/coin_model.dart';
 
 abstract class CoinRemoteDataSource {

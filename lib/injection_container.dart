@@ -1,6 +1,6 @@
 import 'package:bitazza_assignment/core/services/http_service.dart';
 import 'package:bitazza_assignment/core/utils/network_utils.dart';
-import 'package:bitazza_assignment/data/services/bitcoin_service.dart';
+import 'package:bitazza_assignment/core/data/services/bitcoin_service.dart';
 import 'package:bitazza_assignment/features/coin/data/datasource/coin_remote_datasource.dart';
 import 'package:bitazza_assignment/features/coin/data/repositories/coin_repository_impl.dart';
 import 'package:bitazza_assignment/features/coin/domain/repositories/coin_repository.dart';
