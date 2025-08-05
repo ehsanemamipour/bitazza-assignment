@@ -5,7 +5,7 @@ import 'package:bitazza_assignment/features/coin/data/datasource/coin_remote_dat
 import 'package:bitazza_assignment/features/coin/data/repositories/coin_repository_impl.dart';
 import 'package:bitazza_assignment/features/coin/domain/repositories/coin_repository.dart';
 import 'package:bitazza_assignment/features/coin/domain/usecases/fetch_coin_list.dart';
-import 'package:bitazza_assignment/features/coin/presentation/bloc/coin_bloc.dart';
+import 'package:bitazza_assignment/features/coin/presentation/blocs/coin/coin_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';

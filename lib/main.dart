@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injection_container.dart' as di;
 import 'core/utils/app_router.dart';
-import 'features/coin/presentation/bloc/coin_bloc.dart';
+import 'features/coin/presentation/blocs/coin/coin_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

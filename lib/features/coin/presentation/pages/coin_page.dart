@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
-import '../bloc/coin_bloc.dart';
+import '../blocs/coin/coin_bloc.dart';
 
 class CoinPage extends StatefulWidget {
   const CoinPage({super.key});
