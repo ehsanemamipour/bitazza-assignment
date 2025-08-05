@@ -11,6 +11,7 @@ class CoinRemoteDataSourceImpl implements CoinRemoteDataSource {
 
   @override
   Future<List<CoinModel>> getCoinList() async {
+    
     final prices = bitcoinService.getCurrentPrice();
     var idx = 0;
     // Simulate network delay

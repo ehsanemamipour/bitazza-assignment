@@ -1,6 +1,7 @@
 // lib/features/coin/presentation/pages/graph_page.dart
 
 import 'dart:async';
+import 'package:bitazza_assignment/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -9,14 +10,15 @@ import '../../../../data/services/bitcoin_service.dart';
 
 class GraphPage extends StatefulWidget {
   final String currency;
-  const GraphPage({required this.currency, super.key});
+  final double initialPrice;
+  const GraphPage({required this.currency, required this.initialPrice, super.key});
 
   @override
   State<GraphPage> createState() => _GraphPageState();
 }
 
 class _GraphPageState extends State<GraphPage> {
-  final _btcService = BitcoinService();
+  final _btcService = serviceLocator<BitcoinService>();
   final List<FlSpot> _spots = [];
   late DateTime _startTimeUtc;
   late StreamSubscription<Map<String, double>> _sub;
@@ -28,14 +30,23 @@ class _GraphPageState extends State<GraphPage> {
   @override
   void initState() {
     super.initState();
+
     final hist = _btcService.getHistoricalData(widget.currency);
+    _latestPrice = widget.initialPrice;
+
     final nowUtc = DateTime.now().toUtc();
     _startTimeUtc = nowUtc.subtract(Duration(minutes: hist.length - 1)); // backfill
     for (var i = 0; i < hist.length; i++) {
       _spots.add(FlSpot(i.toDouble(), hist[i]));
-      _latestPrice = hist[i];
+
       _t = i + 1;
     }
+
+    setState(() {
+      _spots.add(FlSpot(_t, _latestPrice));
+
+      _t += 1;
+    });
     _sub = _btcService.priceStream.listen((prices) {
       final p = prices[widget.currency]!;
       setState(() {
@@ -61,7 +72,7 @@ class _GraphPageState extends State<GraphPage> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/')),
+        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/coins')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -129,21 +140,6 @@ class _GraphPageState extends State<GraphPage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (i) {
-          if (i == 0)
-            context.go('/');
-          else
-            context.go('/convert');
-        },
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.currency_bitcoin), label: 'Bitcoin'),
-          BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Convert'),
-        ],
       ),
     );
   }

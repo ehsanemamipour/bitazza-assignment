@@ -128,21 +128,6 @@ class _ConvertPageState extends State<ConvertPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        onTap: (i) {
-          if (i == 0)
-            context.go('/');
-          else
-            context.go('/convert');
-        },
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.currency_bitcoin), label: 'Bitcoin'),
-          BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Convert'),
-        ],
-      ),
     );
   }
 }

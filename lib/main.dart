@@ -9,12 +9,7 @@ import 'features/coin/presentation/bloc/coin_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
-  runApp(
-    BlocProvider<CoinBloc>(
-      create: (_) => di.serviceLocator<CoinBloc>(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(BlocProvider<CoinBloc>(create: (_) => di.serviceLocator<CoinBloc>(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,11 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Bitcoin',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      routerConfig: AppRouter.getRouter(),
+      theme: ThemeData(primarySwatch: Colors.purple, scaffoldBackgroundColor: Colors.white),
+      routerConfig: router,
     );
   }
 }

@@ -89,7 +89,8 @@ class _CoinPageState extends State<CoinPage> {
                             ),
                           ],
                         ),
-                        onTap: () => context.go('/graph/${coin.symbol}'),
+                        onTap: () => context.go('/coins/graph/${coin.symbol}', extra: coin.price),
+
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                         horizontalTitleGap: 0,
                         minVerticalPadding: 16,
@@ -102,21 +103,6 @@ class _CoinPageState extends State<CoinPage> {
           }
           return const SizedBox();
         },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (i) {
-          if (i == 0)
-            context.go('/');
-          else
-            context.go('/convert');
-        },
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.currency_bitcoin), label: 'Bitcoin'),
-          BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Convert'),
-        ],
       ),
     );
   }
