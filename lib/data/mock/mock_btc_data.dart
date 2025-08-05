@@ -1,33 +1,39 @@
+import 'dart:math';
 
-final mockCurrentPrice = <String, double>{
-  "USD": 120000.7096,
-  "GBP": 110000.9029,
-  "EUR": 112000.1642,
-};
+const Map<String, double> _basePrices = {'USD': 120000.0, 'GBP': 110000.0, 'EUR': 112000.0};
 
-final mockHistoricalData = <String, List<double>>{
-  "USD": [
-    112468.4740, 110865.8345, 110117.5876, 109203.2066, 109977.9090,
-    110560.9002, 111861.6920, 110475.5204, 110216.7486, 108662.0220,
-    107744.8210, 107762.1311, 106231.4863, 105271.6986, 105745.0563,
-    105887.6265, 104999.5701, 105280.7559, 106258.0681, 104684.9134,
-    105645.3533, 106273.3285, 105764.0152, 104670.8791, 106106.5859,
-    105586.4341, 104296.4187, 103034.5876, 104108.7058, 104432.6693,
-  ],
-  "GBP": [
-    113031.9510, 113810.9620, 113934.6566, 115551.7851, 115130.7180,
-    115310.4623, 116449.9764, 116864.0251, 118132.1408, 118406.2740,
-    119132.9517, 117509.7332, 116550.4952, 115814.0871, 114354.1068,
-    113437.4130, 112079.5720, 111333.0333, 111786.2181, 111332.9211,
-    110899.3271, 109932.8629, 109164.3590, 110594.3725, 111085.5289,
-    111449.2152, 110349.6750, 111108.1970, 109986.2347, 109588.4874,
-  ],
-  "EUR": [
-    113644.7985, 114122.1058, 114317.0825, 114950.2194, 116132.5465,
-    117094.1237, 116142.3173, 114512.0284, 113878.0430, 113084.5666,
-    112104.0652, 113593.6246, 114876.2135, 114237.5404, 114770.2483,
-    114410.8977, 115833.7606, 115690.7703, 114874.7345, 114001.5516,
-    114211.4335, 113398.5049, 113686.2626, 115043.0725, 114695.8743,
-    113730.0918, 115427.6417, 115460.6296, 114043.6139, 112494.1593,
-  ],
-};
+const double _defaultVolatility = 0.015;
+
+final Random _rng = Random();
+
+Map<String, List<double>> generateMockHistoricalData({
+  int length = 30,
+  double volatility = _defaultVolatility,
+}) {
+  final result = <String, List<double>>{};
+  _basePrices.forEach((currency, start) {
+    var price = start;
+    var series = <double>[];
+    for (var i = 0; i < length; i++) {
+      final change = (_rng.nextDouble() * 2 - 1) * volatility;
+      price = price * (1 + change);
+      series.add(double.parse(price.toStringAsFixed(4)));
+    }
+    result[currency] = series;
+  });
+  return result;
+}
+
+Map<String, double> generateMockCurrentPrice({
+  int historyLength = 30,
+  double volatility = _defaultVolatility,
+}) {
+  final hist = generateMockHistoricalData(length: historyLength, volatility: volatility);
+ 
+
+  return {for (var entry in hist.entries) entry.key: entry.value.last};
+}
+
+final mockHistoricalData = generateMockHistoricalData(length: 10);
+
+Map<String, double> get mockCurrentPrice => generateMockCurrentPrice();

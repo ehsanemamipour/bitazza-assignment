@@ -28,7 +28,6 @@ class _GraphPageState extends State<GraphPage> {
   @override
   void initState() {
     super.initState();
-    // seed with mock history
     final hist = _btcService.getHistoricalData(widget.currency);
     final nowUtc = DateTime.now().toUtc();
     _startTimeUtc = nowUtc.subtract(Duration(minutes: hist.length - 1)); // backfill
@@ -37,7 +36,6 @@ class _GraphPageState extends State<GraphPage> {
       _latestPrice = hist[i];
       _t = i + 1;
     }
-    // subscribe to “live” mock updates
     _sub = _btcService.priceStream.listen((prices) {
       final p = prices[widget.currency]!;
       setState(() {
@@ -70,7 +68,6 @@ class _GraphPageState extends State<GraphPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // live price & “~” subtext
             Text(
               _latestPrice.toStringAsFixed(4),
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
@@ -81,18 +78,12 @@ class _GraphPageState extends State<GraphPage> {
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
-            // chart
             Expanded(
               child: LineChart(
                 LineChartData(
                   gridData: FlGridData(show: true),
                   lineBarsData: [
-                    LineChartBarData(
-                      spots: _spots,
-                      isCurved: true,
-                      dotData: FlDotData(show: false),
-                      barWidth: 2,
-                    ),
+                    LineChartBarData(spots: _spots, dotData: FlDotData(show: false), barWidth: 2),
                   ],
                   titlesData: FlTitlesData(
                     bottomTitles: AxisTitles(
@@ -114,7 +105,23 @@ class _GraphPageState extends State<GraphPage> {
                       ),
                     ),
                     leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 50, // give yourself enough room
+                        interval:
+                            (_spots.map((e) => e.y).reduce((a, b) => b > a ? b : a) -
+                                _spots.map((e) => e.y).reduce((a, b) => b < a ? b : a)) /
+                            4, // about 4 ticks
+                        getTitlesWidget: (value, meta) {
+                          final v = value.toStringAsFixed(0);
+                          return SideTitleWidget(
+                            meta: meta,
+                            child: Text('\$$v', style: const TextStyle(fontSize: 8)),
+                          );
+                        },
+                      ),
+                    ),
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
                 ),

@@ -19,11 +19,11 @@ class _CoinPageState extends State<CoinPage> {
   @override
   void initState() {
     super.initState();
-    context.read<CoinBloc>().stream.listen((state) {
-      if (state is CoinLoaded) {
-        _lastUpdate = DateTime.now().toUtc();
-      }
-    });
+    // context.read<CoinBloc>().stream.listen((state) {
+    //   if (state is CoinLoaded) {
+    //     _lastUpdate = DateTime.now().toUtc();
+    //   }
+    // });
   }
 
   @override
@@ -37,35 +37,43 @@ class _CoinPageState extends State<CoinPage> {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          // timestamp
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Text(
-              'Last update: ${df.format(_lastUpdate)} UTC',
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
-            ),
-          ),
-          const Divider(height: 1),
-          // list of rates
-          Expanded(
-            child: BlocBuilder<CoinBloc, CoinState>(
-              builder: (context, state) {
-                if (state is CoinLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state is CoinError) {
-                  return Center(child: Text(state.message));
-                }
-                if (state is CoinLoaded) {
-                  return ListView.separated(
+      body: BlocConsumer<CoinBloc, CoinState>(
+        listener: (context, state) {
+          if (state is CoinLoaded) {
+            _lastUpdate = DateTime.now().toUtc();
+          }
+        },
+        builder: (context, state) {
+          if (state is CoinLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is CoinError) {
+            return Center(child: Text(state.message));
+          }
+          if (state is CoinLoaded) {
+            return Column(
+              children: [
+                // timestamp
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    'Last update: ${df.format(_lastUpdate)} UTC',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                ),
+                const Divider(height: 1),
+                // list of rates
+                Expanded(
+                  child: ListView.separated(
                     itemCount: state.coins.length,
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (_, index) {
                       final coin = state.coins[index];
                       return ListTile(
-                        title: Text('BTC / ${coin.symbol}', style: const TextStyle(fontWeight: FontWeight.w500)),
+                        title: Text(
+                          'BTC / ${coin.symbol}',
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
                         trailing: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -87,13 +95,13 @@ class _CoinPageState extends State<CoinPage> {
                         minVerticalPadding: 16,
                       );
                     },
-                  );
-                }
-                return const SizedBox();
-              },
-            ),
-          ),
-        ],
+                  ),
+                ),
+              ],
+            );
+          }
+          return const SizedBox();
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,

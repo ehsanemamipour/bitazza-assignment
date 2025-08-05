@@ -1,4 +1,3 @@
-
 import 'package:bitazza_assignment/data/services/bitcoin_service.dart';
 import '../models/coin_model.dart';
 
@@ -12,10 +11,10 @@ class CoinRemoteDataSourceImpl implements CoinRemoteDataSource {
 
   @override
   Future<List<CoinModel>> getCoinList() async {
-    final prices = await bitcoinService.getCurrentPrice();
+    final prices = bitcoinService.getCurrentPrice();
     var idx = 0;
-    return prices.entries
-        .map((e) => CoinModel.fromPrice(e.key, e.value, idx++))
-        .toList();
+    // Simulate network delay
+    await Future.delayed(Duration(seconds: 1));
+    return prices.entries.map((e) => CoinModel.fromPrice(e.key, e.value, idx++)).toList();
   }
 }

@@ -9,7 +9,7 @@ class BitcoinService {
      // initial emit
      _priceController.add(mockCurrentPrice);
      // update every minute
-     Timer.periodic(const Duration(minutes: 1), (_) {
+     Timer.periodic(const Duration(seconds: 60), (_) {
        _priceController.add(mockCurrentPrice);
      });
    }
