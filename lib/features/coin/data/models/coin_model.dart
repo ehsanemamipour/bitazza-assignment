@@ -1,3 +1,4 @@
+
 import 'package:bitazza_assignment/features/coin/domain/entities/coin.dart';
 
 class CoinModel extends Coin {
@@ -8,13 +9,22 @@ class CoinModel extends Coin {
     required super.symbol,
   });
 
-
   factory CoinModel.fromMap(String key, Map<String, dynamic> data, int idx) {
     return CoinModel(
-      id:     idx,
-      name:   data['description'] as String,
+      id: idx,
+      name: data['description'] as String,
+      price: data['rate_float'] as num,
       symbol: key,
-      price:  data['rate_float'] as num,
     );
   }
+
+  factory CoinModel.fromPrice(String key, num price, int idx) {
+    return CoinModel(
+      id: idx,
+      name: key,            
+      price: price,
+      symbol: key,
+    );
+  }
+  
 }

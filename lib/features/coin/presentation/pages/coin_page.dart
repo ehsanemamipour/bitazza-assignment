@@ -1,45 +1,114 @@
+// lib/features/coin/presentation/pages/coin_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bitazza_assignment/features/coin/presentation/bloc/coin_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
-class CoinPage extends StatelessWidget {
+import '../bloc/coin_bloc.dart';
+
+class CoinPage extends StatefulWidget {
   const CoinPage({super.key});
   @override
+  State<CoinPage> createState() => _CoinPageState();
+}
+
+class _CoinPageState extends State<CoinPage> {
+  DateTime _lastUpdate = DateTime.now().toUtc();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CoinBloc>().stream.listen((state) {
+      if (state is CoinLoaded) {
+        _lastUpdate = DateTime.now().toUtc();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final df = DateFormat('MMM d, yyyy HH:mm:ss');
     return Scaffold(
-      appBar: AppBar(title: const Text('Bitcoin Prices')),
-      body: BlocBuilder<CoinBloc, CoinState>(
-        builder: (context, state) {
-          if (state is CoinLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is CoinLoaded) {
-            return ListView.builder(
-              itemCount: state.coins.length,
-              itemBuilder: (ctx, i) {
-                final c = state.coins[i];
-                return ListTile(
-                  title: Text(c.symbol),
-                  subtitle: Text(c.price.toStringAsFixed(4)),
-                  onTap: () => context.go('/graph/${c.symbol}'),
-                );
-              },
-            );
-          }
-          if (state is CoinError) {
-            return Center(child: Text(state.message));
-          }
-          return const SizedBox();
-        },
+      appBar: AppBar(
+        title: const Text('Bitcoin'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          children: [
-            Expanded(child: TextButton(onPressed: ()=>{}, child: const Text('Bitcoin'))),
-            Expanded(child: TextButton(onPressed: ()=>context.go('/convert'), child: const Text('Convert'))),
-          ],
-        ),
+      body: Column(
+        children: [
+          // timestamp
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              'Last update: ${df.format(_lastUpdate)} UTC',
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
+          ),
+          const Divider(height: 1),
+          // list of rates
+          Expanded(
+            child: BlocBuilder<CoinBloc, CoinState>(
+              builder: (context, state) {
+                if (state is CoinLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is CoinError) {
+                  return Center(child: Text(state.message));
+                }
+                if (state is CoinLoaded) {
+                  return ListView.separated(
+                    itemCount: state.coins.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (_, index) {
+                      final coin = state.coins[index];
+                      return ListTile(
+                        title: Text('BTC / ${coin.symbol}', style: const TextStyle(fontWeight: FontWeight.w500)),
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              coin.price.toStringAsFixed(4),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              '£${coin.price.toStringAsFixed(4)}',
+                              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                        onTap: () => context.go('/graph/${coin.symbol}'),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                        horizontalTitleGap: 0,
+                        minVerticalPadding: 16,
+                      );
+                    },
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (i) {
+          if (i == 0)
+            context.go('/');
+          else
+            context.go('/convert');
+        },
+        selectedItemColor: Colors.purple,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.currency_bitcoin), label: 'Bitcoin'),
+          BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Convert'),
+        ],
       ),
     );
   }

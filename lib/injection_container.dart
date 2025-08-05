@@ -1,5 +1,6 @@
 import 'package:bitazza_assignment/core/services/http_service.dart';
 import 'package:bitazza_assignment/core/utils/network_utils.dart';
+import 'package:bitazza_assignment/data/services/bitcoin_service.dart';
 import 'package:bitazza_assignment/features/coin/data/datasource/coin_remote_datasource.dart';
 import 'package:bitazza_assignment/features/coin/data/repositories/coin_repository_impl.dart';
 import 'package:bitazza_assignment/features/coin/domain/repositories/coin_repository.dart';
@@ -17,15 +18,10 @@ Future<void> init() async {
   _injectCoin();
 }
 
-
-
 void _injectCoin() {
+  serviceLocator.registerLazySingleton<BitcoinService>(() => BitcoinService());
   //bloc
-  serviceLocator.registerFactory(
-    () => CoinBloc(
-      fetchCoinList: serviceLocator(),
-    ),
-  );
+  serviceLocator.registerFactory(() => CoinBloc(fetchCoinList: serviceLocator()));
   //usecase
   serviceLocator.registerLazySingleton(() => FetchCoinList(repository: serviceLocator()));
 
@@ -35,16 +31,12 @@ void _injectCoin() {
   );
   //datasources
   serviceLocator.registerLazySingleton<CoinRemoteDataSource>(
-    () => CoinRemoteDataSourceImpl(httpService: serviceLocator()),
+    () => CoinRemoteDataSourceImpl(bitcoinService: serviceLocator()),
   );
 }
 
 void _injectExternalLibraries() {
-  serviceLocator.registerLazySingleton<HTTPService>(
-    () => DioService(
-      dio: Dio(),
-    ),
-  );
+  serviceLocator.registerLazySingleton<HTTPService>(() => DioService(dio: Dio()));
   //Data Connection Checker
   serviceLocator.registerLazySingleton(() => Connectivity());
 }

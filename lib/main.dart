@@ -1,18 +1,33 @@
-import 'package:bitazza_assignment/core/utils/app_router.dart';
-import 'package:bitazza_assignment/features/coin/presentation/bloc/coin_bloc.dart';
-import 'package:bitazza_assignment/injection_container.dart' as sl;
+// lib/main.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'injection_container.dart' as di;
+import 'core/utils/app_router.dart';
+import 'features/coin/presentation/bloc/coin_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await sl.init();
+  await di.init();
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<CoinBloc>(create: (_) => sl.serviceLocator<CoinBloc>()..add(LoadCoinsEvent())),
-      ],
-      child: MaterialApp.router(routerConfig: AppRouter.getRouter()),
+    BlocProvider<CoinBloc>(
+      create: (_) => di.serviceLocator<CoinBloc>(),
+      child: const MyApp(),
     ),
   );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'Bitcoin',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      routerConfig: AppRouter.getRouter(),
+    );
+  }
 }
